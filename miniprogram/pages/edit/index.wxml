@@ -1,0 +1,237 @@
+<!--edit.wxml 编辑+背书合一页面（阶段3：编辑模式 + 荧光笔标注）-->
+<view class="page">
+  <!-- 离线模式提示条：网络异常时显示本地数据，联网后自动同步 -->
+  <view class="offline-bar" wx:if="{{isOffline}}">当前为离线模式，联网后自动同步</view>
+
+  <!-- 模式切换：编辑模式 / 背书模式（背书挖空逻辑后续阶段实现） -->
+  <view class="mode-switch">
+    <view
+      class="mode-btn {{mode === 'edit' ? 'mode-btn-active' : ''}}"
+      data-mode="edit"
+      bindtap="onSwitchMode"
+      hover-class="press-hover"
+    >编辑模式</view>
+    <view
+      class="mode-btn {{mode === 'recite' ? 'mode-btn-active' : ''}}"
+      data-mode="recite"
+      bindtap="onSwitchMode"
+      hover-class="press-hover"
+    >背书模式</view>
+  </view>
+
+  <!-- 编辑模式 -->
+  <block wx:if="{{mode === 'edit'}}">
+    <!-- 子页签：文本编辑 / 荧光标注 -->
+    <view class="sub-tabs">
+      <view
+        class="sub-tab {{subTab === 'edit' ? 'sub-tab-active' : ''}}"
+        data-tab="edit"
+        bindtap="onSwitchSubTab"
+        hover-class="press-hover"
+      >编辑文本</view>
+      <view
+        class="sub-tab {{subTab === 'mark' ? 'sub-tab-active' : ''}}"
+        data-tab="mark"
+        bindtap="onSwitchSubTab"
+        hover-class="press-hover"
+      >荧光标注</view>
+    </view>
+
+    <!-- 子页签：文本编辑（原有编辑能力） -->
+    <block wx:if="{{subTab === 'edit'}}">
+      <!-- 标题 + 字号调节：同一行排布，标题占剩余宽度，字号栏固定宽度 -->
+      <view class="top-row">
+        <input
+          class="title-input"
+          value="{{title}}"
+          placeholder="笔记标题"
+          maxlength="50"
+          bindinput="onTitleInput"
+        />
+
+        <!-- 字号调节：滑块实时作用于正文渲染区域 -->
+        <view class="font-bar">
+          <text class="font-label">字体</text>
+          <slider
+            class="font-slider"
+            min="24"
+            max="64"
+            step="2"
+            value="{{fontSize}}"
+            activeColor="#2f3542"
+            backgroundColor="#e2e5ea"
+            block-size="16"
+            block-color="#ffffff"
+            bindchanging="onFontChange"
+            bindchange="onFontChange"
+          />
+          <text class="font-value">{{fontSize}}</text>
+        </view>
+      </view>
+
+      <!-- 多行文本输入框：支持粘贴，保留 \n 换行，字号实时生效 -->
+      <view class="content-wrap">
+        <textarea
+          class="content-input"
+          style="font-size: {{fontSize}}rpx; line-height: {{lineHeight}}rpx;"
+          value="{{content}}"
+          placeholder="在此粘贴或输入需要背诵的文本"
+          maxlength="-1"
+          bindinput="onContentInput"
+        />
+      </view>
+    </block>
+
+    <!-- 子页签：荧光标注（按 \n 分段渲染，标注文字带荧光背景） -->
+    <block wx:else>
+      <scroll-view class="mark-scroll" scroll-y bindscroll="onTextScroll">
+        <view
+          class="text-content"
+          style="font-size: {{fontSize}}rpx; line-height: {{lineHeight}}rpx;"
+          bindtouchstart="onTextTouchStart"
+          catchtouchmove="{{markTool !== 'browse' ? 'onTextTouchMove' : ''}}"
+          bindtouchend="onTextTouchEnd"
+          bindtouchcancel="onTextTouchCancel"
+        >
+          <!-- 每行一个 view（\n 分段），行内逐字符 text，标注字符带荧光底色 -->
+          <block wx:if="{{hasText}}">
+            <view
+              class="line"
+              wx:for="{{lineList}}"
+              wx:key="lineIndex"
+              wx:for-item="line"
+              style="{{line.chars.length === 0 ? 'height:' + lineHeight + 'rpx;' : ''}}"
+            >
+              <text
+                class="char"
+                wx:for="{{line.chars}}"
+                wx:for-item="c"
+                wx:key="index"
+                style="{{c.color ? 'background-color:' + c.color + ';' : ''}}"
+              >{{c.ch}}</text>
+            </view>
+          </block>
+          <!-- 空文本提示 -->
+          <view class="mark-empty" wx:else>暂无文本，请先在「编辑文本」中录入内容</view>
+
+          <!-- 涂抹预览遮罩（颜色跟随当前荧光色，半透明） -->
+          <view
+            class="sel-overlay"
+            wx:for="{{selOverlays}}"
+            wx:key="*this"
+            style="left:{{item.left}}px; top:{{item.top}}px; width:{{item.width}}px; height:{{item.height}}px; background-color:{{item.color}};"
+          ></view>
+        </view>
+      </scroll-view>
+    </block>
+  </block>
+
+  <!-- 背书模式：挖空渲染（分组切换 + 下划线占位） -->
+  <block wx:else>
+    <!-- 挖空分组切换按钮：单选 -->
+    <view class="dig-tabs">
+      <view
+        class="dig-tab {{digGroup === 0 ? 'dig-tab-active' : ''}}"
+        data-group="0"
+        bindtap="onSwitchDigGroup"
+        hover-class="press-hover"
+      >挖第1组</view>
+      <view
+        class="dig-tab {{digGroup === 1 ? 'dig-tab-active' : ''}}"
+        data-group="1"
+        bindtap="onSwitchDigGroup"
+        hover-class="press-hover"
+      >挖第2组</view>
+      <view
+        class="dig-tab {{digGroup === 2 ? 'dig-tab-active' : ''}}"
+        data-group="2"
+        bindtap="onSwitchDigGroup"
+        hover-class="press-hover"
+      >挖第3组</view>
+    </view>
+
+    <!-- 挖空文本渲染：保留 \n 分段，选中组标注替换为下划线占位 -->
+    <scroll-view class="recite-scroll" scroll-y>
+      <view
+        class="recite-content"
+        style="font-size: {{fontSize}}rpx; line-height: {{lineHeight}}rpx;"
+      >
+        <block wx:if="{{hasText}}">
+          <view
+            class="recite-line"
+            wx:for="{{reciteLineList}}"
+            wx:key="lineIndex"
+            wx:for-item="line"
+            style="{{!line.segments.length ? 'height:' + lineHeight + 'rpx;' : ''}}"
+          >
+            <!-- 行内文本段：挖空段显示下划线，普通段显示原文 -->
+            <!-- 挖空段绑定按压事件：按下展示原文，松开恢复下划线（仅挖空段有效） -->
+            <text
+              class="recite-seg {{seg.cloze ? 'recite-seg-cloze' : ''}} {{seg.cloze && revealSegKey === seg.segKey ? 'recite-seg-reveal' : ''}}"
+              wx:for="{{line.segments}}"
+              wx:for-item="seg"
+              wx:key="segKey"
+              data-key="{{seg.segKey}}"
+              bindtouchstart="{{seg.cloze ? 'onClozeTouchStart' : ''}}"
+              bindtouchend="{{seg.cloze ? 'onClozeTouchEnd' : ''}}"
+              bindtouchcancel="{{seg.cloze ? 'onClozeTouchCancel' : ''}}"
+            >{{seg.cloze ? (revealSegKey === seg.segKey ? seg.text : seg.underscores) : seg.text}}</text>
+          </view>
+        </block>
+        <!-- 空文本提示 -->
+        <view class="recite-empty" wx:else>暂无文本，请先在编辑模式中录入内容</view>
+        <!-- 有文本但没有标注时提示 -->
+        <view class="recite-no-anno" wx:if="{{hasText && annotations.length === 0}}">暂无标注，请先在编辑模式中用荧光笔标注重点</view>
+      </view>
+    </scroll-view>
+  </block>
+
+  <!-- 保存按钮（仅编辑模式 + 文本编辑页签显示，逻辑不变） -->
+  <view class="save-bar" wx:if="{{mode === 'edit' && subTab === 'edit'}}">
+    <view class="save-btn" bindtap="onSave" hover-class="save-btn-hover">保存</view>
+  </view>
+
+  <!-- 荧光笔工具条（标注页签常驻）：选色 + 工具切换（涂抹/擦除/浏览）+ 撤销 -->
+  <view class="mark-bar" wx:if="{{mode === 'edit' && subTab === 'mark'}}">
+    <!-- 当前工具提示 -->
+    <view class="mark-bar-tip">{{markTool === 'paint' ? '涂抹模式：滑动涂字' : markTool === 'erase' ? '擦除模式：滑动擦除高光' : '浏览模式：滑动翻页，轻点标注可删除'}}</view>
+    <!-- 荧光颜色选择：默认黄色 -->
+    <view class="color-row">
+      <view
+        class="color-dot {{markColor === item ? 'color-dot-active' : ''}}"
+        wx:for="{{colorOptions}}"
+        wx:key="*this"
+        style="background-color: {{item}};"
+        data-color="{{item}}"
+        bindtap="onChooseColor"
+      ></view>
+    </view>
+    <view class="mark-bar-btns">
+      <!-- 工具切换按钮组（三选一） -->
+      <view
+        class="mark-bar-btn mark-bar-tool {{markTool === 'paint' ? 'mark-bar-tool-on' : ''}}"
+        data-tool="paint"
+        bindtap="onSelectTool"
+        hover-class="press-hover"
+      >涂抹</view>
+      <view
+        class="mark-bar-btn mark-bar-tool {{markTool === 'erase' ? 'mark-bar-tool-on' : ''}}"
+        data-tool="erase"
+        bindtap="onSelectTool"
+        hover-class="press-hover"
+      >擦除</view>
+      <view
+        class="mark-bar-btn mark-bar-tool {{markTool === 'browse' ? 'mark-bar-tool-on' : ''}}"
+        data-tool="browse"
+        bindtap="onSelectTool"
+        hover-class="press-hover"
+      >浏览</view>
+      <!-- 小按钮：退回上一步（撤销最近一次标注操作） -->
+      <view
+        class="mark-bar-btn mark-bar-undo"
+        bindtap="onUndoAnnotation"
+        hover-class="press-hover"
+      >↶ 撤销</view>
+    </view>
+  </view>
+</view>

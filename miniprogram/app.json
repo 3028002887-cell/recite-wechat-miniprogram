@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/edit/index",
+    "pages/example/index"
+  ],
+  "window": {
+    "backgroundColor": "#f5f6f8",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#f5f6f8",
+    "navigationBarTitleText": "背书小程序",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

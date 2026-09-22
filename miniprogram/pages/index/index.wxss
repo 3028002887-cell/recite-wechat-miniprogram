@@ -1,0 +1,173 @@
+/**index.wxss 首页笔记列表（浅灰白极简 · 新拟态仪表盘风格）**/
+
+/* 设计令牌（全局色板）：
+   背景 #f5f6f8 / 卡片 #ffffff / 主文字 #1f2430 / 次文字 #6b7280
+   辅助文字 #9aa0a6 / 主按钮 #2f3542 / 分割线 #e5e7eb / 荧光强调 #fff200 */
+
+page {
+  background: #f5f6f8;
+}
+
+.page {
+  padding: 24rpx 24rpx 200rpx;
+}
+
+/* 离线模式提示条：浅灰卡片低饱和呈现 */
+.offline-bar {
+  margin-bottom: 16rpx;
+  padding: 14rpx 20rpx;
+  background: #f0f2f5;
+  color: #6b7280;
+  font-size: 22rpx;
+  border-radius: 10rpx;
+  border: 1rpx solid #e5e7eb;
+}
+
+/* 笔记卡片：白底圆角卡、极轻描边 + 双层柔和阴影（新拟态仪表盘质感） */
+.note-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 14rpx;
+  padding: 24rpx 26rpx;
+  margin-bottom: 14rpx;
+  border: 1rpx solid #e5e7eb;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+/* 卡片按压反馈：轻微灰度反馈，不做缩放动效，保持沉稳 */
+.note-item-hover {
+  background: #f4f6f9;
+}
+
+.note-main {
+  flex: 1;
+  min-width: 0; /* 防止长标题挤压删除按钮 */
+}
+
+.note-title-row {
+  display: flex;
+  align-items: center;
+}
+
+.note-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1f2430;
+  max-width: 480rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 编辑锁标记：浅灰描边小标签，低饱和状态提示 */
+.note-lock-tag {
+  flex-shrink: 0;
+  margin-left: 12rpx;
+  padding: 2rpx 12rpx;
+  font-size: 20rpx;
+  color: #6b7280;
+  background: #f0f2f5;
+  border: 1rpx solid #e5e7eb;
+  border-radius: 6rpx;
+}
+
+/* 说明文字：中灰细体 */
+.note-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #6b7280;
+}
+
+/* 标注数与时间之间用细分割线分隔 */
+.note-count {
+  margin-left: 16rpx;
+  padding-left: 16rpx;
+  border-left: 1rpx solid #e5e7eb;
+}
+
+/* 删除：危险操作——浅灰背景 + 深灰文字，确认弹窗中才有轻量红色提示 */
+.note-delete {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  padding: 10rpx 24rpx;
+  font-size: 26rpx;
+  color: #1f2430;
+  background: #f0f2f5;
+  border-radius: 10rpx;
+}
+
+.note-delete-hover {
+  background: #e8ebef;
+}
+
+/* 空状态：细线圆环 + 加号，与右下角主按钮呼应 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 220rpx;
+}
+
+.empty-icon {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1rpx solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(31, 36, 48, 0.04);
+}
+
+/* 细线加号图标：深灰、细字重（约 2rpx 线宽观感）、40rpx */
+.empty-plus {
+  color: #6b7280;
+  font-size: 40rpx;
+  font-weight: 200;
+  line-height: 1;
+}
+
+.empty-title {
+  margin-top: 28rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #1f2430;
+}
+
+.empty-sub {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+/* 悬浮新建按钮：小巧圆形、蓝灰底色、白色细加号，投影柔和 */
+.fab {
+  position: fixed;
+  right: 36rpx;
+  bottom: 96rpx;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: #4a5568;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(47, 53, 66, 0.22);
+}
+
+.fab-hover {
+  background: #2f3542;
+}
+
+/* 悬浮按钮加号：白色细线（实心深底上的惯例反白） */
+.fab-plus {
+  color: #ffffff;
+  font-size: 40rpx;
+  font-weight: 200;
+  line-height: 1;
+}

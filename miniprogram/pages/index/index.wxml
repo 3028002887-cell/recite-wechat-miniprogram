@@ -1,0 +1,48 @@
+<!--index.wxml 首页笔记列表-->
+<view class="page">
+  <!-- 离线模式提示条：网络异常时显示本地缓存数据，联网后自动同步 -->
+  <view class="offline-bar" wx:if="{{isOffline}}">当前为离线模式，显示本地数据，联网后自动同步</view>
+
+  <!-- 笔记列表 -->
+  <view class="note-list" wx:if="{{noteList.length > 0}}">
+    <view
+      class="note-item"
+      wx:for="{{noteList}}"
+      wx:key="_id"
+      data-index="{{index}}"
+      bindtap="onOpenNote"
+      hover-class="note-item-hover"
+    >
+      <view class="note-main">
+        <view class="note-title-row">
+          <view class="note-title">{{item.title}}</view>
+          <!-- 其他设备正在编辑时展示锁标记 -->
+          <view class="note-lock-tag" wx:if="{{item.isLocked}}">编辑中</view>
+        </view>
+        <view class="note-meta">
+          <text class="note-time">{{item.createTimeText}}</text>
+          <text class="note-count" wx:if="{{item.annotationCount > 0}}">{{item.annotationCount}} 处标注</text>
+        </view>
+      </view>
+      <!-- catchtap 阻止冒泡，避免触发卡片打开 -->
+      <view
+        class="note-delete"
+        data-index="{{index}}"
+        catchtap="onDeleteNote"
+        hover-class="note-delete-hover"
+      >× 删除</view>
+    </view>
+  </view>
+
+  <!-- 空状态：细线圆环 + 加号图标 -->
+  <view class="empty" wx:else>
+    <view class="empty-icon"><text class="empty-plus">＋</text></view>
+    <text class="empty-title">还没有笔记</text>
+    <text class="empty-sub">点击右下角按钮，新建你的第一篇背书笔记</text>
+  </view>
+
+  <!-- 悬浮新建按钮 -->
+  <view class="fab" bindtap="onCreateNote" hover-class="fab-hover">
+    <text class="fab-plus">＋</text>
+  </view>
+</view>

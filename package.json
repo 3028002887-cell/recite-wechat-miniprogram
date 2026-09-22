@@ -1,0 +1,7 @@
+{
+  "name": "recite-miniprogram",
+  "version": "1.0.0",
+  "description": "挖空背书工具：微信原生小程序 + 云开发",
+  "private": true,
+  "scripts": {}
+}

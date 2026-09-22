@@ -1,0 +1,9 @@
+{
+  "name": "notes",
+  "version": "1.0.0",
+  "description": "背书小程序笔记模块云函数：获取openid、笔记增删查",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
